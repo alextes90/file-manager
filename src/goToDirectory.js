@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
+import { pathToSource } from "./utils/index.js";
 
 export const goToDirectory = async (pathToCurrentDir, pathToDir) => {
   if (!pathToDir) {
@@ -7,16 +8,7 @@ export const goToDirectory = async (pathToCurrentDir, pathToDir) => {
     return;
   }
 
-  let pathToNewDirectory;
-
-  if (path.isAbsolute(pathToDir)) {
-    pathToNewDirectory = pathToDir;
-  } else {
-    pathToNewDirectory = path.join(
-      pathToCurrentDir,
-      ...pathToDir.split(path.sep)
-    );
-  }
+  const pathToNewDirectory = pathToSource(pathToCurrentDir, pathToDir);
 
   try {
     await fs.access(pathToNewDirectory);
