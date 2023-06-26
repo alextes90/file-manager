@@ -1,5 +1,5 @@
 import { stdout, stdin } from "process";
-import { exit } from "./utils/index.js";
+import { argsSplit, exit } from "./utils/index.js";
 import { goToUpperDir } from "./goToUpperDir.js";
 import { readCurrentDir } from "./readCurrentDir.js";
 import { EOL, homedir } from "os";
@@ -11,6 +11,10 @@ import { createNewFile } from "./createNewFile.js";
 import { renameFile } from "./renameFile.js";
 import { copyFileToNewDir } from "./copyFileInNewDir.js";
 import { deleteFile } from "./deleteFile.js";
+import { osPrompts } from "./osPrompts.js";
+import { generateHash } from "./generateHash.js";
+import { compressFile } from "./compressFile.js";
+import { decompressFile } from "./decopmpressFile.js";
 
 const DIR_PATH = path.dirname(fileURLToPath(import.meta.url));
 const pathToUserHomeDir = homedir();
@@ -52,19 +56,14 @@ const parseEnv = () => {
       const newFileName = trimmedData.substring(4);
       await createNewFile(pathToCurrentDir, newFileName);
     } else if (trimmedData.startsWith("rn ")) {
-      const [pathToFile, newFilename] = trimmedData.substring(3).split(" ") || [
-        null,
-        null,
-      ];
+      const [pathToFile, newFilename] = argsSplit(trimmedData.substring(3));
       if (!pathToFile || !newFilename) {
         console.error(`Invalid input ${EOL}`);
       } else {
         await renameFile(pathToCurrentDir, pathToFile, newFilename);
       }
     } else if (trimmedData.startsWith("cp ")) {
-      const [pathToFile, pathToNewDir] = trimmedData
-        .substring(3)
-        .split(" ") || [null, null];
+      const [pathToFile, pathToNewDir] = argsSplit(trimmedData.substring(3));
       if (!pathToFile || !pathToNewDir) {
         console.error(`Invalid input ${EOL}`);
       } else {
@@ -74,9 +73,7 @@ const parseEnv = () => {
       const fileToDelete = trimmedData.substring(3);
       await deleteFile(pathToCurrentDir, fileToDelete);
     } else if (trimmedData.startsWith("mv ")) {
-      const [pathToFile, pathToNewDir] = trimmedData
-        .substring(3)
-        .split(" ") || [null, null];
+      const [pathToFile, pathToNewDir] = argsSplit(trimmedData.substring(3));
       if (!pathToFile || !pathToNewDir) {
         console.error(`Invalid input ${EOL}`);
       } else {
@@ -89,8 +86,36 @@ const parseEnv = () => {
           await deleteFile(pathToCurrentDir, pathToFile);
         }
       }
+    } else if (trimmedData.startsWith("os ")) {
+      const [, command] = trimmedData.split("--") || [null, null];
+      if (!command) {
+        console.error(`Invalid input ${EOL}`);
+      } else {
+        osPrompts(command);
+      }
+    } else if (trimmedData.startsWith("hash ")) {
+      const pathToFileToHash = trimmedData.substring(5);
+      await generateHash(pathToCurrentDir, pathToFileToHash);
+    } else if (trimmedData.startsWith("compress ")) {
+      const [pathToFile, pathToDestination] = argsSplit(
+        trimmedData.substring(9)
+      );
+      if (!pathToFile || !pathToDestination) {
+        console.error(`Invalid input ${EOL}`);
+      } else {
+        await compressFile(pathToCurrentDir, pathToFile, pathToDestination);
+      }
+    } else if (trimmedData.startsWith("decompress ")) {
+      const [pathToFile, pathToDestination] = argsSplit(
+        trimmedData.substring(11)
+      );
+      if (!pathToFile || !pathToDestination) {
+        console.error(`Invalid input ${EOL}`);
+      } else {
+        await decompressFile(pathToCurrentDir, pathToFile, pathToDestination);
+      }
     } else {
-      stdout.write(`Invalid input ${EOL}`);
+      console.error(`Invalid input ${EOL}`);
     }
 
     stdout.write(`You are currently in ${pathToCurrentDir}${EOL}`);

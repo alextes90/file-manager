@@ -8,13 +8,41 @@ export const exit = (userName) => {
 };
 
 export const pathToSource = (pathToCurrentDir, pathToSource) => {
-  if (path.isAbsolute(pathToSource)) {
-    return pathToSource;
+  let pathToSourcePure = pathToSource;
+
+  if (pathToSource.startsWith(`'`) || pathToSource.startsWith(`"`)) {
+    pathToSourcePure = pathToSource.slice(1, -1);
+  }
+
+  if (path.isAbsolute(pathToSourcePure)) {
+    return pathToSourcePure;
   } else {
     const absolutePathToSource = path.join(
       pathToCurrentDir,
-      ...pathToSource.split(path.sep)
+      ...pathToSourcePure.split(path.sep)
     );
     return absolutePathToSource;
   }
+};
+
+export const argsSplit = (str) => {
+  let pureString = str;
+  let separator = " ";
+  if (str.startsWith(`'`) && str.at(-1) === `'`) {
+    pureString = str.slice(1, -1);
+    separator = `' '`;
+  }
+  if (str.startsWith(`'`) && str.at(-1) !== `'`) {
+    pureString = str.slice(1);
+    separator = `' `;
+  }
+  if (!str.startsWith(`'`) && str.at(-1) === `'`) {
+    pureString = str.slice(-1);
+    separator = ` '`;
+  }
+  const [pathToSource, pathToDestination] = pureString.split(separator) || [
+    null,
+    null,
+  ];
+  return [pathToSource, pathToDestination];
 };
