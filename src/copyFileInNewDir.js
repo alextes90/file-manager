@@ -23,7 +23,11 @@ export const copyFileToNewDir = async (
       isNewFileAlreadyExist = true;
     } catch {}
 
-    if (isOldPathDir || isNewFileAlreadyExist) {
+    if (
+      isOldPathDir ||
+      isNewFileAlreadyExist ||
+      pathToFileToCopy === pathToNewFile
+    ) {
       throw new Error("");
     }
 
@@ -37,5 +41,6 @@ export const copyFileToNewDir = async (
     });
   } catch {
     console.error("FS operation failed");
+    return "error";
   }
 };
