@@ -10,6 +10,7 @@ import { readFileByPath } from "./readFileByPath.js";
 import { createNewFile } from "./createNewFile.js";
 import { renameFile } from "./renameFile.js";
 import { copyFileToNewDir } from "./copyFileInNewDir.js";
+import { deleteFile } from "./deleteFile.js";
 
 const DIR_PATH = path.dirname(fileURLToPath(import.meta.url));
 const pathToUserHomeDir = homedir();
@@ -68,6 +69,25 @@ const parseEnv = () => {
         console.error(`Invalid input ${EOL}`);
       } else {
         await copyFileToNewDir(pathToCurrentDir, pathToFile, pathToNewDir);
+      }
+    } else if (trimmedData.startsWith("rm ")) {
+      const fileToDelete = trimmedData.substring(3);
+      await deleteFile(pathToCurrentDir, fileToDelete);
+    } else if (trimmedData.startsWith("mv ")) {
+      const [pathToFile, pathToNewDir] = trimmedData
+        .substring(3)
+        .split(" ") || [null, null];
+      if (!pathToFile || !pathToNewDir) {
+        console.error(`Invalid input ${EOL}`);
+      } else {
+        const thrownError = await copyFileToNewDir(
+          pathToCurrentDir,
+          pathToFile,
+          pathToNewDir
+        );
+        if (thrownError !== "error") {
+          await deleteFile(pathToCurrentDir, pathToFile);
+        }
       }
     } else {
       stdout.write(`Invalid input ${EOL}`);
