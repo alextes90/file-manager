@@ -1,9 +1,10 @@
 import fs from "fs/promises";
-import path from "path";
+import { pathToSource } from "./utils/index.js";
 
 export const createNewFile = async (pathToCurrentDir, fileName) => {
   try {
-    await fs.writeFile(path.join(pathToCurrentDir, fileName), " ", {
+    const purePath = pathToSource(pathToCurrentDir, fileName);
+    await fs.writeFile(purePath, " ", {
       flag: "wx",
     });
   } catch {

@@ -6,12 +6,18 @@ export const renameFile = async (pathToCurrentDir, pathToFile, newFileName) => {
   try {
     const pathToFileToRename = pathToSource(pathToCurrentDir, pathToFile);
     let pathToNewFilename;
+    let pathToSourcePure = newFileName;
+
+    if (newFileName.startsWith(`'`) || newFileName.startsWith(`"`)) {
+      pathToSourcePure = newFileName.slice(1, -1);
+    }
+
     if (path.isAbsolute(pathToFile)) {
       const helperArr = pathToFile.split(path.sep);
       helperArr.pop();
-      pathToNewFilename = path.join(...helperArr, newFileName);
+      pathToNewFilename = path.join(...helperArr, pathToSourcePure);
     } else {
-      pathToNewFilename = path.join(pathToCurrentDir, newFileName);
+      pathToNewFilename = path.join(pathToCurrentDir, pathToSourcePure);
     }
 
     const isOldPathDir = (await fs.stat(pathToFileToRename)).isDirectory();
