@@ -28,6 +28,7 @@ export const pathToSource = (pathToCurrentDir, pathToSource) => {
 export const argsSplit = (str) => {
   let pureString = str;
   let separator = " ";
+
   if (str.startsWith(`'`) && str.at(-1) === `'`) {
     pureString = str.slice(1, -1);
     separator = `' '`;
@@ -37,7 +38,7 @@ export const argsSplit = (str) => {
     separator = `' `;
   }
   if (!str.startsWith(`'`) && str.at(-1) === `'`) {
-    pureString = str.slice(-1);
+    pureString = str.slice(0, -1);
     separator = ` '`;
   }
   const [pathToSource, pathToDestination] = pureString.split(separator) || [

@@ -15,8 +15,10 @@ export const decompressFile = async (
     const pathToSrc = pathToSource(pathToCurrentDir, pathToFile);
     let pathToDest = pathToSource(pathToCurrentDir, pathToDestination);
 
-    if ((await stat(pathToDest)).isDirectory()) {
-      pathToDest = path.join(pathToDest, "decompressed.txt");
+    if (!path.extname(pathToDest) === ".br") {
+      if ((await stat(pathToDest)).isDirectory()) {
+        pathToDest = path.join(pathToDest, "decompressed.txt");
+      }
     }
 
     let isSrcCorrect = true;

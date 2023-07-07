@@ -15,8 +15,10 @@ export const compressFile = async (
     const pathToSrc = pathToSource(pathToCurrentDir, pathToFile);
     let pathToDest = pathToSource(pathToCurrentDir, pathToDestination);
 
-    if ((await stat(pathToDest)).isDirectory()) {
-      pathToDest = path.join(pathToDest, "archive.br");
+    if (!path.extname(pathToDest) === ".br") {
+      if ((await stat(pathToDest)).isDirectory()) {
+        pathToDest = path.join(pathToDest, "archive.br");
+      }
     }
 
     let isSrcCorrect = true;
